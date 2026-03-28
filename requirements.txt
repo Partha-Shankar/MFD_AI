@@ -1,0 +1,25 @@
+# --- Core Backend ---
+fastapi==0.115.0
+uvicorn==0.27.0
+python-multipart
+pydantic
+aiofiles
+
+# --- Image & Video Processing ---
+# Using headless version for Render (Linux) compatibility
+opencv-python-headless
+Pillow
+piexif
+numpy==1.26.4
+
+# --- AI & ML (CPU Optimized for Render) ---
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.4.1
+torchvision==0.19.1
+transformers
+timm
+
+# --- Audio & Utilities ---
+librosa
+soundfile
+scipy

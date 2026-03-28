@@ -33,3 +33,6 @@ frontend/build/
 db.json
 
 documentation_hub/
+JUDGE_PRESENTATION_GUIDE.md
+VIDEO_ANALYSIS_TECHNICAL_DOCS.md
+VIDEO_JUDGE_CODE_SNIPPETS.md

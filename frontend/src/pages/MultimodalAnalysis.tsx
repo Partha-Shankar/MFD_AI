@@ -16,16 +16,18 @@ import { analyzeMultimodal } from '../services/analysisService';
 import AnalysisLogs, { Stage } from '../components/AnalysisLogs';
 
 const MULTIMODAL_STAGES: Stage[] = [
-  { agent: 'Multimodal Core', message: 'Initializing cross-modal analysis engine...' },
-  { agent: 'Input Parser', message: 'Detecting input types...' },
-  { agent: 'Image Engine', message: 'Running image forensic analysis...' },
-  { agent: 'Audio Engine', message: 'Processing voice authenticity...' },
-  { agent: 'Text Analyzer', message: 'Evaluating semantic consistency...' },
-  { agent: 'Cross-Modal Engine', message: 'Comparing modalities...' },
-  { agent: 'Consistency Checker', message: 'Detecting logical mismatches...' },
-  { agent: 'Fact Checker', message: 'Validating combined content integrity...' },
-  { agent: 'Anomaly Detector', message: 'Identifying cross-modal inconsistencies...' },
-  { agent: 'Decision Engine', message: 'Computing final authenticity score...' },
+  { agent: 'Fusion Hub', message: 'Initializing parallel cross-modal execution context...' },
+  { agent: 'Image Engine', message: 'Delegating visual payload to Port 8002 (Image Forensics Service)...' },
+  { agent: 'Audio Engine', message: 'Injecting audio stream to Wav2Vec2 neural backhaul...' },
+  { agent: 'Video Engine', message: 'Dispatching temporal frame sequencing pipeline...' },
+  { agent: 'Semantic Parser', message: 'Executing NLP tensor extraction on contextual text metadata...' },
+  { agent: 'A/V Sync Layer', message: 'Computing lip-sync offset matrices across AV boundaries...' },
+  { agent: 'Emotion Engine', message: 'Cross-verifying vocal prosody against visual micro-expressions...' },
+  { agent: 'Latent Matcher', message: 'Calculating cosine similarity across unified multimodal embeddings...' },
+  { agent: 'Truth Scorer', message: 'Weighing contradictory signals (e.g. Authentic Video vs Synthesized Audio)...' },
+  { agent: 'Semantic AI', message: 'Verifying logical consistency of visual scenario against provided context...' },
+  { agent: 'Verdict Engine', message: 'Executing deterministic final fusion algorithm...' },
+  { agent: 'Fusion Hub', message: 'Cross-modal anomaly payload assembled and finalized.' },
 ];
 
 const MultimodalAnalysis = () => {

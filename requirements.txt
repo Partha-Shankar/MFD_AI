@@ -23,3 +23,4 @@ timm
 librosa
 soundfile
 scipy
+mutagen

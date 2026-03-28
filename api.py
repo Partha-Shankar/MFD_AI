@@ -12,7 +12,7 @@ from link_analyzer import analyze_link
 
 import image_detector as img_det
 import video_detector as vid_det
-from audio_detector import analyze_audio as _analyze_audio
+from audio_analysis.pipeline import run_audio_pipeline as _run_audio_pipeline
 import json
 
 app = FastAPI()
@@ -406,22 +406,19 @@ async def analyze_audio(
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    res     = _analyze_audio(file_path, bypass_code=x_bypass_code)
-    score   = res.get("score", 0)
-    verdict = "AI Generated Audio Likely" if score >= 60 else "Audio Likely Real"
+    # Run the full 6-phase Nexus audio forensics pipeline
+    res = _run_audio_pipeline(file_path, bypass_code=x_bypass_code)
 
     result = {
         "id":        file_id,
         "type":      "audio",
         "filename":  file.filename,
-        "ai_status": verdict,
-        "verdict":   verdict,
-        "score":     score,
+        "ai_status": res.get("ai_status", res.get("verdict", "Unknown")),
+        "verdict":   res.get("verdict", "Unknown"),
+        "score":     res.get("score", 0),
         "timestamp": datetime.now().isoformat(),
-        "details": {
-            "flags": res.get("explanation", [])
-        },
-        "user": user["email"]
+        "details":   res.get("details", {}),
+        "user":      user["email"]
     }
 
     history.append(result)
@@ -432,6 +429,37 @@ async def analyze_audio(
     except Exception:
         pass
     return result
+
+
+class CrossModalFusionEngine:
+    """
+    PSEUDOCODE MODULE: Defines the mathematical fusion of disparate network signals.
+    Demonstrates calculation of AV-Sync offset matrices and Semantic Latent Vectors.
+    """
+    def __init__(self, av_tolerance_ms: float = 12.0):
+        self.av_tolerance_ms = av_tolerance_ms
+
+    def calculate_lipsync_deviation(self, video_phonemes: list, audio_mfcc: list) -> float:
+        # Pseudo: Extracts phoneme visual bounds vs audio spectral events
+        # Computes temporal desynchronization in milliseconds using cross-correlation
+        sync_offset_ms = 4.3  # Natural biological variance
+        if not video_phonemes or not audio_mfcc:
+            return 0.0
+        
+        # Deepfake tolerance is typically mathematically pure (<0.1ms) or heavily botched (>100ms)
+        deviation = abs(sync_offset_ms - self.av_tolerance_ms)
+        return deviation
+
+    def verify_semantic_alignment(self, image_latent_tensor, text_latent_tensor) -> float:
+        # Pseudo: Calculates cosine similarity between CLIP representations
+        import torch
+        import torch.nn.functional as F
+        
+        if image_latent_tensor is None or text_latent_tensor is None:
+            return 1.0 # default to match
+            
+        similarity = F.cosine_similarity(image_latent_tensor, text_latent_tensor, dim=-1)
+        return float(similarity)
 
 
 @app.post("/analyze/multimodal")

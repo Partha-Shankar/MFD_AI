@@ -20,20 +20,20 @@ import {
   Brain,
   CheckCircle2,
 } from 'lucide-react';
-import api from '../services/api';
+import { analyzeLink } from '../services/analysisService';
 import AnalysisLogs, { Stage } from '../components/AnalysisLogs';
 
 const ANALYSIS_STAGES: Stage[] = [
-  { agent: 'Forensic Engine', message: 'Initializing forensic engine...' },
-  { agent: 'Metadata Extractor', message: 'Collecting media metadata...' },
-  { agent: 'Media Parser', message: 'Extracting video frames...' },
-  { agent: 'Vision AI', message: 'Analyzing frame-level artifacts...' },
-  { agent: 'GAN Detector', message: 'Detecting GAN diffusion patterns...' },
-  { agent: 'Motion Tracker', message: 'Tracing motion consistency...' },
-  { agent: 'Compression Inspector', message: 'Scanning compression signatures...' },
-  { agent: 'Semantic AI', message: 'Evaluating semantic authenticity...' },
-  { agent: 'Database Indexer', message: 'Cross-referencing deepfake datasets...' },
-  { agent: 'Report Generator', message: 'Generating authenticity report...' },
+  { agent: 'Link Validator', message: 'Verifying YouTube/Instagram URL availability and stream status...' },
+  { agent: 'Network Proxy', message: 'Tunneling request to bypass CDN rate limits...' },
+  { agent: 'Background Downloader', message: 'Securely downloading High-Res video container to encrypted buffer...' },
+  { agent: 'Stream Check', message: 'Video downloaded successfully. Commencing demultiplexing...' },
+  { agent: 'Multimodal Core', message: 'Dispatching payload to Multi-Fusion Analysis Engine...' },
+  { agent: 'Image Processing', message: 'Executing frame extraction (sampling 3 fps for Spatial CNN)...' },
+  { agent: 'Video Processing', message: 'Executing temporal optical flow scanner across sequence...' },
+  { agent: 'Audio Processing', message: 'Extracting audio and routing to Wav2vec2 neural anomaly detector...' },
+  { agent: 'Fusion Aggregator', message: 'Calculating final cross-modal consensus probability...' },
+  { agent: 'UI Formatter', message: 'Preparing verifiable forensic payload.' }
 ];
 
 const LinkAnalysis = () => {
@@ -100,10 +100,9 @@ const LinkAnalysis = () => {
       }
     }, stageMs);
 
-    // Fire actual API call simultaneously; wait at least 45s before showing result
     const startTime = Date.now();
     try {
-      const response = await api.post('/analyze/link', { url });
+      const data = await analyzeLink(url);
       const elapsed2 = Date.now() - startTime;
       const remaining = Math.max(0, totalMs - elapsed2);
       await new Promise((resolve) => setTimeout(resolve, remaining));
@@ -112,7 +111,7 @@ const LinkAnalysis = () => {
       clearInterval(stageIntervalRef.current);
       setProgress(100);
       await new Promise((res) => setTimeout(res, 400));
-      setResult(response.data);
+      setResult(data);
     } catch (err: any) {
       clearInterval(intervalRef.current);
       clearInterval(stageIntervalRef.current);

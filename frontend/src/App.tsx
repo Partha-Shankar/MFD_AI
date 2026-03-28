@@ -13,7 +13,6 @@ import Profile from './pages/Profile';
 import LinkAnalysis from './pages/LinkAnalysis';
 import AudioAnalysis from './pages/AudioAnalysis';
 import MultimodalAnalysis from './pages/MultimodalAnalysis';
-import SystemLogs from './pages/SystemLogs';
 import DashboardLayout from './components/layout/DashboardLayout';
 
 function App() {

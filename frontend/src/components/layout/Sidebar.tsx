@@ -13,8 +13,7 @@ import {
   LogOut,
   ChevronRight,
   Mic,
-  Activity,
-  Terminal
+  Activity
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -29,7 +28,6 @@ const Sidebar = () => {
     { path: '/analyze-audio', icon: Mic, label: 'Audio Analysis' },
     { path: '/analyze-link', icon: Link2, label: 'Link Analysis' },
     { path: '/analyze-multimodal', icon: Activity, label: 'Multimodal Analysis', badge: 'ADVANCED' },
-    { path: '/system-logs', icon: Terminal, label: 'System Logs' },
     { path: '/how-it-works', icon: HelpCircle, label: 'How It Works' },
     { path: '/about', icon: Info, label: 'About Us' },
     { path: '/profile', icon: User, label: 'Profile' },

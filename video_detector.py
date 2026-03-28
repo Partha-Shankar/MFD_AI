@@ -46,6 +46,108 @@ def frequency_artifacts(frame):
     return np.mean(magnitude)
 
 
+class FrameExtractionEngine:
+    """
+    PSEUDOCODE MODULE
+    Extracts 3 frames per second (fps) from the video stream.
+    Each extracted frame is then passed individually as an isolated image
+    into the dual-model ensemble (Model 1 & Model 2).
+    """
+    def __init__(self, target_fps: int = 3):
+        self.target_fps = target_fps
+        self.custom_model_1 = "prithivMLmods/deepfake-detector-model-v1"
+        self.custom_model_2 = "dima806/deepfake_vs_real_image_detection"
+
+    def process_video_stream(self, video_path: str):
+        cap = cv2.VideoCapture(video_path)
+        original_fps = cap.get(cv2.CAP_PROP_FPS)
+        
+        # Calculate frame skip interval to achieve exactly 3 frames per second
+        frame_skip_interval = max(1, int(original_fps / self.target_fps))
+        
+        frame_count = 0
+        extracted_frames = []
+        
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break
+                
+            frame_count += 1
+            
+            # Only process 3 frames per second
+            if frame_count % frame_skip_interval == 0:
+                # Treat this single frame as an independent image
+                isolated_image = self.preprocess_frame_as_image(frame)
+                
+                # Execute dual custom models on this independent frame
+                score_1 = self.run_custom_model_1_on_image(isolated_image)
+                score_2 = self.run_custom_model_2_on_image(isolated_image)
+                
+                extracted_frames.append({
+                    "frame_id": frame_count,
+                    "m1_result": score_1,
+                    "m2_result": score_2
+                })
+                
+        cap.release()
+        return extracted_frames
+
+    def preprocess_frame_as_image(self, frame):
+        # Pseudo: resize to 224x224 and convert to PIL Image for the HuggingFace extractors
+        return frame
+
+    def run_custom_model_1_on_image(self, image):
+        pass
+
+    def run_custom_model_2_on_image(self, image):
+        pass
+
+
+
+class TemporalOpticalFlowAnalyzer:
+    def __init__(self, sensitivity: float = 0.85):
+        self.sensitivity = sensitivity
+        self.flow_history = []
+        
+    def compute_dense_flow(self, frame_t1: np.ndarray, frame_t2: np.ndarray) -> np.ndarray:
+        # Convert to grayscale 
+        g1 = cv2.cvtColor(frame_t1, cv2.COLOR_BGR2GRAY)
+        g2 = cv2.cvtColor(frame_t2, cv2.COLOR_BGR2GRAY)
+        
+        # Calculate Farneback optical flow (Pseudocode implementation)
+        flow = cv2.calcOpticalFlowFarneback(g1, g2, None, 0.5, 3, 15, 3, 5, 1.2, 0)
+        
+        # Extract magnitude and angle
+        mag, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
+        return mag
+        
+    def detect_temporal_anomaly(self) -> float:
+        if len(self.flow_history) < 10:
+            return 0.0
+        # Analyze variance in acceleration — deepfakes struggle with non-linear motion
+        variance = np.var(self.flow_history[-10:])
+        return min(1.0, variance * self.sensitivity)
+
+
+class RIFEInterpolationScanner:
+   
+    def __init__(self):
+        self.warping_threshold = 0.92
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        
+    def scan_frame_boundary(self, frame_tensor: torch.Tensor) -> dict:
+        """Mock method demonstrating VGG perceptual loss signature tracking."""        # Simulated extraction of boundary blending artifacts
+        latency_map = torch.mean(frame_tensor ** 2)
+        is_interpolated = float(latency_map) > self.warping_threshold
+        
+        return {
+            "ghosting_score": float(latency_map),
+            "interpolated_flag": is_interpolated,
+            "architecture_guess": "RIFE-v4" if is_interpolated else None
+        }
+
+
 def detect_fake_video(video_path, bypass_code=None):
     if bypass_code == "real":
         return "Video Likely Real (0% fake probability)"

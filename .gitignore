@@ -7,7 +7,6 @@ venv/
 
 # Models & Media
 Nexus_Custom_Models/
-models/
 image_analysis/models/
 .hf_cache/
 *.pth

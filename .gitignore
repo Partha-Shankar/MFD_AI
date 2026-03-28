@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Models & Media
+Nexus_Custom_Models/
+models/
+image_analysis/models/
+.hf_cache/
+*.pth
+*.bin
+*.onnx
+*.h5
+uploads/
+*.mp4
+*.jpeg
+*.jpg
+*.png
+
+# Node / Frontend
+node_modules/
+frontend/dist/
+frontend/build/
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+# Database
+db.json
+
+documentation_hub/

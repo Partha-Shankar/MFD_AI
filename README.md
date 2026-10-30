@@ -1,148 +1,205 @@
-# Multimodal Deepfake Forensic Detection System
+# Multimodal Fake Content Detector
 
-An advanced, production-ready AI forensic platform designed to combat highly sophisticated generative media, including AI-generated images, deepfake videos, voice cloning, and synthetically manipulated social media links. 
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Status: Prototype](https://img.shields.io/badge/Status-Prototype-4B5563?style=flat-square)
 
-The system leverages a multi-microservice architecture to process massive spatial, temporal, and spectral tensor payloads concurrently, unifying them via a deterministic Cross-Modal Consensus Hub to detect zero-day digital manipulation.
+A research prototype for detecting AI-generated and manipulated media, also named PixelDNA in its commit history. The project combines signal-processing techniques with pretrained neural models to analyze images, video, and audio, and presents the results through a React dashboard.
 
----
+> **Notice:** This is a prototype for demonstration and learning. Its results have not been formally evaluated and should not be used as evidence or as the sole basis for decisions about the authenticity of media.
 
-## ⚡ Core Forensic Modalities
+## Overview
 
-### 1. 🖼️ Spatial Image Forensics
-A dedicated, isolated PyTorch microservice executing a 5-layer analysis pipeline:
-- **Error Level Analysis (ELA):** Maps compression variances and identifies localized patching.
-- **EfficientNet-B0 (`ai_detector_best.pth`):** Evaluates macro-structural artifacts caused by generative scaling.
-- **ResNet-50 (`manipulation_detector_best.pth`):** Scans the stacked ELA tensor for splicing anomalies.
-- **CLIP ViT-L/14 Context:** Verifies semantic alignment of image manifolds against latent textual cues.
+The system exposes a FastAPI gateway for analysis requests and a separate image analysis service. Each media type has its own pipeline that produces a score, a verdict, and supporting findings. The dashboard handles uploads, shows the results, and keeps a history of past scans.
 
-### 2. 🎞️ Temporal Video Forensics
-- **Precise Frame Extraction:** Dynamically calculates native container framerates and extracts exactly 3 isolated frames per second from the multimedia stream.
-- **Synchronized Neural Tracking:** Bypasses conventional APIs by feeding the extracted frames directly into the shared local custom weights (`ai_detector_best` & `manipulation_detector_best`).
-- **Temporal Optical Flow:** Computes dense Farneback optical matrices across continuous frames, tracking unnatural acceleration vectors symptomatic of deepfakes.
-- **Bidirectional Synthesis Scanner:** Parses boundaries for ghosting artifacts caused by frame-interpolation architectures (RIFE/DAIN).
+## Implementation Status
 
-### 3. 🎙️ Acoustic Bio-Signal Forensics (6-Phase Pipeline)
-- **Spectral Regularity:** Calculates MFCC arrays from Mel-Spectrograms to detect metronomic HiFi-GAN vocoding.
-- **Sub-vocal Bio-Signals:** Scans temporal structures for F0 pitch jitter and natural inhalation/exhalation pauses.
-- **Nexus-AudioForge-v2:** Ingests the waveform into a highly specialized `wav2vec2-base-960h` acoustic transformer. 
-- **Speaker Cosine Distance:** Prevents voice-cloning by calculating identity similarity vectors across segmented audio.
+| Module | Status | Notes |
+| --- | --- | --- |
+| Image analysis | Implemented | Pretrained detectors, Error Level Analysis, and metadata checks |
+| Video analysis | Implemented | Frame sampling with pretrained deepfake detectors |
+| Audio analysis | Implemented | Six-phase pipeline combining signal analysis with a Wav2Vec2 model |
+| Multimodal analysis | Partial | Combines the image, video, and audio scores; cross-modal functions are outlined in pseudocode |
+| Link analysis | Demonstration | Does not download or analyze media; returns reference entries or generated placeholder results |
+| `advanced_*.py` and training scripts | Research outlines | Marked in the source as pseudo-implementations |
 
-### 4. 🌐 Headless Link Analysis
-- **Anti-Bot Proxy Router:** Silently bypasses CDNs using headless browser tunneling.
-- **Memory Demultiplexing:** Downloads and demultiplexes standard payload streams. Uses FFmpeg in-memory piping to split integrated MP4 structures into discrete RGB video tensors and PCM audio codecs.
+Analysis endpoints also accept an `X-Bypass-Code` header, which forces a chosen result for demonstration purposes.
 
-### 5. 🧩 Cross-Modal Consensus Fusion
-- **Lip-Sync Desynchronization (`calculate_lipsync_deviation`):** Mathematically traces visual kinetic text boundaries versus auditory spectral spikes.
-- **Semantic Consistency (`verify_semantic_alignment`):** Ingests and enforces prompt consistency via mathematically calculated latent alignment algorithms (Cosine Similarity).
+## Key Features
 
----
+- Error Level Analysis for images
+- AI-image and deepfake classification using pretrained Hugging Face models
+- Frame-based video analysis
+- Audio analysis covering spectral features, pitch and timing, speaker consistency, and file metadata
+- Rule-based weighted fusion for the audio verdict
+- Login and a dashboard summarizing past scans
 
-## 🧠 Locally Trained Custom Models
-To avoid the network latency of cloud APIs and ensure absolute privacy, the system relies on proprietary local `.pth` neural weight checkpoints heavily fine-tuned specifically for this platform.
+## Technology Stack
 
-1. **`ai_detector_best.pth` (EfficientNet-B0 Baseline):** 
-   * **Domain:** Spatial Image & Extracted Video Frames.
-   * **Purpose:** Custom-trained on 40,000+ generative images (MidJourney v6, Stable Diffusion XL, DALL-E) to localize global synthetic noise profiles. It captures non-organic pixel relationships and voxel rendering artifacts invisible to the human eye.
-   
-2. **`manipulation_detector_best.pth` (ResNet-50 Patch Analyzer):** 
-   * **Domain:** Spatial Image & Extracted Video Frames.
-   * **Purpose:** Acts on an Error Level Analysis (ELA) sub-map. Custom-trained strictly on localized splicing attacks (e.g., face-swapping, object removal). It scans specifically for hard-edge mathematical inconsistencies on boundaries rather than global image generation.
+| Layer | Technology |
+| --- | --- |
+| Frontend | React 19, TypeScript, Vite, Tailwind CSS, Zustand, TanStack Query, Recharts, Framer Motion |
+| Backend | FastAPI, Uvicorn |
+| Machine learning | PyTorch, Hugging Face Transformers, timm |
+| Media processing | OpenCV, Pillow, piexif, librosa, soundfile, SciPy, mutagen |
+| Storage | Local `db.json` file |
 
-3. **`Nexus-AudioForge-v2.pth` (wav2vec2-base-960h Transformer):** 
-   * **Domain:** Vocal Cloning Forensics.
-   * **Purpose:** A heavily fine-tuned iteration of an acoustic transformer trained to detect deepfake TTS vocoders (e.g., ElevenLabs, Bark). It tracks micro-jitter inside high-frequency phonemes.
+## Architecture and Workflow
 
----
-
-## 🏗️ System Architecture 
-
-This system employs a decoupled, multi-tier architecture to securely parallelize heavy tensor operations.
-
-* **Frontend Client:** React 19 + TypeScript + Vite + Tailwind CSS. Utilizes `framer-motion` for complex continuous 50-second terminal logging telemetry.
-* **Core API Gateway (Port 8000):** FastAPI server acting as the primary hub routing all Audio, Video, Link, and Fusion operations.
-* **Image Microservice (Port 8002):** A wholly isolated FastAPI instance dedicated solely to operating the spatial 5-layer pipeline and PyTorch memory allocations.
-* **Unified Model Weights (`/models`):** All custom trained `.pth` topologies are localized on-device to ensure privacy and circumvent external API latency.
-
----
-
-## 💻 Tech Stack
-
-- **Backend:** Python 3.10+, FastAPI, Uvicorn, PyTorch, Transformers (HuggingFace), OpenCV, Librosa, FFmpeg 
-- **Frontend:** React, TypeScript, Vite, Tailwind CSS, Zustand, Framer Motion
-- **Database:** Local forensic telemetry `db.json` logging (SQLite-scalable)
-
----
-
-## 🚀 Installation & Setup
-
-### 1. Requirements
-Ensure you have the following installed on your machine:
-- Node.js (v18+)
-- Python (3.10+) 
-- FFmpeg (added to system PATH)
-- Conda or virtual environment (recommended)
-
-### 2. Clone the Repository
-```bash
-git clone https://github.com/your-org/multimodal-fake-detector.git
-cd multimodal-fake-detector
+```mermaid
+flowchart LR
+    A[React dashboard] --> B[Core API on port 8000]
+    A --> C[Image service on port 8002]
+    B --> D[Image and video detectors]
+    B --> E[Audio pipeline]
+    B --> F[Link module]
+    C --> G[ELA and image models]
+    B --> H[(db.json)]
 ```
 
-### 3. Setup Python Backend Environment
-```bash
-# Create and activate virtual environment
-python -m venv venv
-# Windows:
-.\venv\Scripts\activate
-# Linux/Mac:
-source venv/bin/activate
+## Project Structure
 
-# Install strictly enforced AI dependencies
+```text
+MFD_AI/
+├── api.py                  Core API gateway
+├── image_detector.py       Image detection
+├── video_detector.py       Video detection
+├── link_analyzer.py        Link analysis demonstration
+├── audio_analysis/         Audio pipeline and modules
+├── image_analysis/         Image analysis service
+├── video_analysis/         Video analysis modules
+├── models/                 Model weights
+├── frontend/               React dashboard
+├── advanced_*.py           Research outlines
+├── nexus_*.py              Training pipeline outlines
+└── requirements.txt
+```
+
+## Installation and Setup
+
+### Prerequisites
+
+- Python 3.10 or later
+- Node.js 18 or later
+- FFmpeg on the system path
+
+### Backend
+
+```bash
+git clone https://github.com/Partha-Shankar/MFD_AI.git
+cd MFD_AI
+python -m venv venv
+```
+
+Activate the virtual environment:
+
+```bash
+source venv/bin/activate      # Linux and macOS
+venv\Scripts\activate         # Windows
+```
+
+Install the dependencies:
+
+```bash
 pip install -r requirements.txt
 ```
 
-### 4. Set Up Model Directory
-Ensure your custom trained weights are located in the unified `./models` directory:
-- `models/ai_detector_best.pth`
-- `models/manipulation_detector_best.pth`
+### Missing Source Files
 
-### 5. Setup React Frontend
+Two local modules are imported by the services but are not in the current repository:
+
+- **`link_dataset.py`** is required by `api.py`. It was removed in a later commit and can be restored from history:
+
+  ```bash
+  git checkout e1d28f1 -- link_dataset.py
+  ```
+
+- **`image_analysis/models/`**, which contains the model loader, is required by the image service. It is excluded by `.gitignore` and must be supplied separately.
+
+### Frontend
+
 ```bash
 cd frontend
 npm install
-cd ..
 ```
 
----
+## Configuration
 
-## ⚙️ Running the Application
+Copy `image_analysis/.env.example` to `image_analysis/.env` to configure the image service.
 
-To achieve fully optimized local inference, you will need to start three distinct services simultaneously.
+| Variable | Purpose |
+| --- | --- |
+| `LOCAL_MODEL_DIR` | Directory containing local model weights |
+| `FEEDBACK_LOG_PATH` | Location of the feedback log |
+| `IMAGE_ANALYSIS_PORT` | Image service port |
+| `CORS_ORIGINS` | Allowed frontend origins |
+| `HF_MODEL_CACHE` | Hugging Face model cache |
 
-### Terminal 1: Core API Gateway
-This server handles incoming forensic streams, the Audio pipeline, the Video extraction logic, and multi-fusion data aggregation.
+Some model and cache paths are currently hardcoded for the original development machine, including `D:\huggingface_cache` in `image_analysis/api/main.py` and `D:\.hf_cache` in `audio_analysis/pipeline.py`. Adjust these for your environment.
+
+## Usage
+
+Run each service in its own terminal.
+
 ```bash
-.\venv\Scripts\activate
 uvicorn api:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### Terminal 2: Image Microservice 
-This specialized microservice spins up PyTorch solely to process the ELA Spatial pipeline safely outside the main thread.
 ```bash
-.\venv\Scripts\activate
 uvicorn image_analysis.api.main:app --host 0.0.0.0 --port 8002 --reload
 ```
 
-### Terminal 3: Vite Frontend Client
-Initializes the React user interface.
 ```bash
 cd frontend
 npm run dev
 ```
 
-The application is now accessible locally. Proceed to [http://localhost:5173](http://localhost:5173).
+Then open `http://localhost:5173`.
 
----
+### API Reference
 
-## 🔐 Licensing
-Proprietary Forensic Software. Use for academic or verified hackathon/demonstration purposes only. Do not scale for public production without establishing load-balancing on the internal PyTorch tensor allocation clusters.
+| Method | Path | Purpose |
+| --- | --- | --- |
+| POST | `/auth/signup`, `/auth/login` | Create an account or log in |
+| GET | `/user/profile` | Retrieve the current user |
+| GET | `/analysis/history` | Retrieve scan history |
+| POST | `/analyze/image` | Analyze an image |
+| POST | `/analyze/video` | Analyze a video |
+| POST | `/analyze/audio` | Analyze an audio file |
+| POST | `/analyze/link` | Link analysis demonstration |
+| POST | `/analyze/multimodal` | Analyze multiple media types together |
+
+## Technical Implementation
+
+### Models
+
+| Model | Used For | Source |
+| --- | --- | --- |
+| `Organika/sdxl-detector` | AI-generated images | Hugging Face |
+| `umm-maybe/AI-image-detector` | AI-generated images | Hugging Face |
+| `openai/clip-vit-base-patch32` | Image context | Hugging Face |
+| `prithivMLmods/deepfake-detector-model-v1` | Video frames | Hugging Face |
+| `dima806/deepfake_vs_real_image_detection` | Video frames | Hugging Face |
+| `facebook/wav2vec2-base-960h` | Audio features | Hugging Face |
+| `models/ai_detector_best.pth`, `models/model.pth` | Local weights | Repository |
+
+### Audio Pipeline
+
+| Phase | Component | Analysis |
+| --- | --- | --- |
+| 0 | Neural model | Wav2Vec2-based classification |
+| 1 | Spectral analyzer | Mel spectrogram, FFT, phase, and noise floor |
+| 2 | Temporal analyzer | Pitch jitter, breathing, prosody, and pauses |
+| 3 | Speaker analyzer | Embedding drift and voice consistency |
+| 4 | Metadata analyzer | Format, encoder, and bitrate |
+| 5 | Verdict engine | Weighted fusion and rule-based verdict |
+
+## Future Scope
+
+- Formal evaluation on benchmark deepfake datasets
+- A working link pipeline that downloads and analyzes media
+- Implementation of the cross-modal fusion outlines
+- Secure credential storage for user accounts
